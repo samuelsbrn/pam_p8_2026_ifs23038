@@ -1,6 +1,7 @@
-// lib/shared/shell_scaffold.dart
+// lib/shared/widgets/shell_scaffold.dart
 
 import 'package:flutter/material.dart';
+import 'app_background.dart';
 import 'bottom_nav_widget.dart';
 
 class ShellScaffold extends StatelessWidget {
@@ -11,7 +12,8 @@ class ShellScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      extendBody: true,
+      body: AppBackground(showTopGlow: false, child: child),
       bottomNavigationBar: const BottomNavWidget(),
     );
   }

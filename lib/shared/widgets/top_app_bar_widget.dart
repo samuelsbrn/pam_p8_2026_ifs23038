@@ -25,7 +25,6 @@ class TopAppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     this.showBackButton = false,
     this.menuItems = const [],
     this.showThemeToggle = true,
-    // Search
     this.withSearch = false,
     this.onSearchChanged,
     this.searchHint = 'Cari...',
@@ -35,7 +34,6 @@ class TopAppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final bool showBackButton;
   final List<TopAppBarMenuItem> menuItems;
   final bool showThemeToggle;
-  // Search
   final bool withSearch;
   final ValueChanged<String>? onSearchChanged;
   final String searchHint;
@@ -65,85 +63,99 @@ class _TopAppBarWidgetState extends State<TopAppBarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDark;
 
-    // ── Mode Pencarian ──────────────────────────────
     if (_isSearching) {
       return AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: _closeSearch,
         ),
-        title: TextField(
-          controller: _searchCtrl,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: widget.searchHint,
-            border: InputBorder.none,
+        titleSpacing: 0,
+        title: Container(
+          height: 44,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.56),
+            borderRadius: BorderRadius.circular(14),
           ),
-          onChanged: widget.onSearchChanged,
-        ),
-        actions: [
-          if (_searchCtrl.text.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                _searchCtrl.clear();
-                widget.onSearchChanged?.call('');
-                setState(() {});
-              },
+          child: TextField(
+            controller: _searchCtrl,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: widget.searchHint,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchCtrl.text.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () {
+                        _searchCtrl.clear();
+                        widget.onSearchChanged?.call('');
+                        setState(() {});
+                      },
+                    ),
             ),
-        ],
+            onChanged: (value) {
+              widget.onSearchChanged?.call(value);
+              setState(() {});
+            },
+          ),
+        ),
       );
     }
 
-    // ── Mode Normal ─────────────────────────────────
     return AppBar(
-      title: Text(widget.title,
-          style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(
+        widget.title,
+        style: const TextStyle(fontWeight: FontWeight.w800),
+      ),
       centerTitle: false,
       automaticallyImplyLeading: widget.showBackButton,
       actions: [
-        // Tombol Search
         if (widget.withSearch)
-          IconButton(
-            icon: const Icon(Icons.search),
+          _ActionPill(
+            icon: Icons.search_rounded,
             tooltip: 'Cari',
-            onPressed: () => setState(() => _isSearching = true),
+            onTap: () => setState(() => _isSearching = true),
           ),
-
-        // Tombol Light/Dark Toggle
         if (widget.showThemeToggle)
-          IconButton(
-            icon: Icon(isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined),
+          _ActionPill(
+            icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
             tooltip: isDark ? 'Mode Terang' : 'Mode Gelap',
-            onPressed: () => themeProvider.toggleTheme(),
+            onTap: themeProvider.toggleTheme,
           ),
-
-        // Menu Tambahan (titik tiga)
         if (widget.menuItems.isNotEmpty)
           PopupMenuButton<int>(
-            onSelected: (i) => widget.menuItems[i].onTap(),
+            icon: const Icon(Icons.more_horiz_rounded),
+            tooltip: 'Menu',
+            position: PopupMenuPosition.under,
+            onSelected: (index) => widget.menuItems[index].onTap(),
             itemBuilder: (_) => List.generate(
               widget.menuItems.length,
-                  (i) => PopupMenuItem<int>(
-                value: i,
+              (index) => PopupMenuItem<int>(
+                value: index,
                 child: Row(
                   children: [
                     Icon(
-                      widget.menuItems[i].icon,
+                      widget.menuItems[index].icon,
                       size: 20,
-                      color: widget.menuItems[i].isDestructive
-                          ? Theme.of(context).colorScheme.error
+                      color: widget.menuItems[index].isDestructive
+                          ? colorScheme.error
                           : null,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Text(
-                      widget.menuItems[i].text,
+                      widget.menuItems[index].text,
                       style: TextStyle(
-                        color: widget.menuItems[i].isDestructive
-                            ? Theme.of(context).colorScheme.error
+                        color: widget.menuItems[index].isDestructive
+                            ? colorScheme.error
                             : null,
                       ),
                     ),
@@ -152,7 +164,40 @@ class _TopAppBarWidgetState extends State<TopAppBarWidget> {
               ),
             ),
           ),
+        const SizedBox(width: 6),
       ],
+    );
+  }
+}
+
+class _ActionPill extends StatelessWidget {
+  const _ActionPill({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: Material(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.56),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Tooltip(
+            message: tooltip,
+            child: SizedBox(width: 40, height: 40, child: Icon(icon, size: 20)),
+          ),
+        ),
+      ),
     );
   }
 }

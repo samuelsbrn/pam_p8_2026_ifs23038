@@ -1,14 +1,12 @@
 // lib/data/services/auth_repository.dart
 
-import 'dart:io';
 import 'dart:typed_data';
 import '../models/api_response_model.dart';
 import '../models/user_model.dart';
 import 'auth_service.dart';
 
 class AuthRepository {
-  AuthRepository({AuthService? service})
-      : _service = service ?? AuthService();
+  AuthRepository({AuthService? service}) : _service = service ?? AuthService();
 
   final AuthService _service;
 
@@ -92,14 +90,12 @@ class AuthRepository {
 
   Future<ApiResponse<void>> updatePhoto({
     required String authToken,
-    File? imageFile,
-    Uint8List? imageBytes,
+    required Uint8List imageBytes,
     String imageFilename = 'photo.jpg',
   }) async {
     try {
       return await _service.updatePhoto(
         authToken: authToken,
-        imageFile: imageFile,
         imageBytes: imageBytes,
         imageFilename: imageFilename,
       );

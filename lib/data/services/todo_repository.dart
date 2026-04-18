@@ -7,17 +7,23 @@ import '../models/todo_model.dart';
 import 'todo_service.dart';
 
 class TodoRepository {
-  TodoRepository({TodoService? service})
-      : _service = service ?? TodoService();
+  TodoRepository({TodoService? service}) : _service = service ?? TodoService();
 
   final TodoService _service;
 
   Future<ApiResponse<List<TodoModel>>> getTodos({
     required String authToken,
     String search = '',
+    int? page,
+    int? perPage,
   }) async {
     try {
-      return await _service.getTodos(authToken: authToken, search: search);
+      return await _service.getTodos(
+        authToken: authToken,
+        search: search,
+        page: page,
+        perPage: perPage,
+      );
     } catch (e) {
       return ApiResponse(success: false, message: 'Terjadi kesalahan jaringan: $e');
     }
@@ -30,7 +36,9 @@ class TodoRepository {
   }) async {
     try {
       return await _service.createTodo(
-        authToken: authToken, title: title, description: description,
+        authToken: authToken,
+        title: title,
+        description: description,
       );
     } catch (e) {
       return ApiResponse(success: false, message: 'Terjadi kesalahan jaringan: $e');
