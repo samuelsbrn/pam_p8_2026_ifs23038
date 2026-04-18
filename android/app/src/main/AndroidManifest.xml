@@ -10,7 +10,7 @@
                      android:maxSdkVersion="32"/>
 
     <application
-            android:label="Delcom Todos"
+            android:label="pam_p8_2026_ifs23038"
             android:name="${applicationName}"
             android:icon="@mipmap/ic_launcher"
             android:usesCleartextTraffic="true">

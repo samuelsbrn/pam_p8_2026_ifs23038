@@ -4,8 +4,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl =
-      'https://pam-2026-p5-ifs18005-be.delcom.org:8080';
+  static const String baseUrl = 'http://127.0.0.1';
 
   // ── Auth ──────────────────────────────────
   static const String authRegister = '/auth/register';
