@@ -12,7 +12,7 @@ class ShellScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      extendBody: false, // Ubah ke false agar konten tidak tertutup Navigation Bar
       body: AppBackground(showTopGlow: false, child: child),
       bottomNavigationBar: const BottomNavWidget(),
     );

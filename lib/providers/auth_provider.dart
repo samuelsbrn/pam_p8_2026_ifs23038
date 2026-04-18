@@ -89,7 +89,12 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> loadProfile() async {
     if (_authToken == null) return;
-    _setStatus(AuthStatus.loading);
+
+    // Hanya tampilkan loading jika user sebelumnya kosong (login pertama)
+    if (_user == null) {
+      _setStatus(AuthStatus.loading);
+    }
+
     final result = await _repository.getMe(authToken: _authToken!);
     if (result.success && result.data != null) {
       _user = result.data;
@@ -108,7 +113,7 @@ class AuthProvider extends ChangeNotifier {
     required String username,
   }) async {
     if (_authToken == null) return false;
-    _setStatus(AuthStatus.loading);
+    // Status loading dihapus di sini agar tidak memicu Router melempar ke layar Login
     final result = await _repository.updateMe(
       authToken: _authToken!,
       name: name,
@@ -119,7 +124,7 @@ class AuthProvider extends ChangeNotifier {
       return true;
     }
     _errorMessage = result.message;
-    _setStatus(AuthStatus.authenticated);
+    notifyListeners();
     return false;
   }
 
@@ -128,18 +133,17 @@ class AuthProvider extends ChangeNotifier {
     required String newPassword,
   }) async {
     if (_authToken == null) return false;
-    _setStatus(AuthStatus.loading);
     final result = await _repository.updatePassword(
       authToken: _authToken!,
       currentPassword: currentPassword,
       newPassword: newPassword,
     );
     if (result.success) {
-      _setStatus(AuthStatus.authenticated);
+      notifyListeners();
       return true;
     }
     _errorMessage = result.message;
-    _setStatus(AuthStatus.authenticated);
+    notifyListeners();
     return false;
   }
 
@@ -148,7 +152,6 @@ class AuthProvider extends ChangeNotifier {
     String imageFilename = 'photo.jpg',
   }) async {
     if (_authToken == null) return false;
-    _setStatus(AuthStatus.loading);
     final result = await _repository.updatePhoto(
       authToken: _authToken!,
       imageBytes: imageBytes,
@@ -159,7 +162,7 @@ class AuthProvider extends ChangeNotifier {
       return true;
     }
     _errorMessage = result.message;
-    _setStatus(AuthStatus.authenticated);
+    notifyListeners();
     return false;
   }
 

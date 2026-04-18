@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/api_constants.dart'; // Import ini ditambahkan
 import '../../core/constants/route_constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../shared/widgets/app_background.dart';
@@ -236,9 +237,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (user?.urlPhoto != null && user!.urlPhoto!.isNotEmpty) {
+      // Gabungkan Base URL agar gambar bisa terunduh dengan benar
+      final imageUrl = user.urlPhoto!.startsWith('http')
+          ? user.urlPhoto!
+          : '${ApiConstants.baseUrl}${user.urlPhoto!.startsWith('/') ? '' : '/'}${user.urlPhoto!}';
+
       return ClipOval(
         child: Image.network(
-          user.urlPhoto!,
+          imageUrl,
           width: 108,
           height: 108,
           fit: BoxFit.cover,
@@ -394,12 +400,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onPressed: _profileLoading ? null : _submitProfile,
                         icon: _profileLoading
                             ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
                             : const Icon(Icons.save_outlined),
                         label: Text(
                           _profileLoading ? 'Menyimpan...' : 'Simpan Profil',
@@ -466,12 +472,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onPressed: _passLoading ? null : _submitPassword,
                         icon: _passLoading
                             ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
                             : const Icon(Icons.key),
                         label: Text(
                           _passLoading ? 'Mengubah...' : 'Ganti Kata Sandi',
